@@ -285,12 +285,6 @@ def launch(args):
     #database.connect()
 
     # Start process
-    try:
-        with open('datas.json'):
-            log.info("datas.json found")
-            os.remove("datas.json")
-    except IOError:
-        log.info("datas.json not found")
     if 'file' in args and args['file'] is not None:
         path = args['file']
         log.filename = os.path.basename(path)
@@ -334,10 +328,3 @@ def launch(args):
     #database.conn.close()
     end = time.time()
     log.info('Process end after ' + timer(start, end) + '')
-    
-    
-    tf = open("datas.json", "r")
-    datas = json.load(tf)
-    log.info(datas)
-    print(datas)
-
