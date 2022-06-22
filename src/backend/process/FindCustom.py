@@ -20,7 +20,7 @@ from ..functions import search_custom_positions
 
 
 class FindCustom:
-    def __init__(self, text, log, regex, config, ocr, files, supplier, file, database, docservers):
+    def __init__(self, text, log, regex, config, ocr, files, supplier, file, docservers):
         self.Ocr = ocr
         self.log = log
         self.text = text
@@ -30,7 +30,6 @@ class FindCustom:
         self.config = config
         self.docservers = docservers
         self.supplier = supplier
-        self.database = database
         self.ocr_errors_table = ocr.ocr_errors_table
 
     def process(self, data):
@@ -49,12 +48,12 @@ class FindCustom:
     def run(self):
         data_to_return = {}
         if self.supplier:
-            list_of_fields = self.database.select({
-                'select': ['positions', 'regex', 'pages'],
-                'table': ['positions_masks'],
-                'where': ['supplier_id = %s'],
-                'data': [self.supplier[2]['supplier_id']]
-            })
+            #list_of_fields = self.database.select({
+            #    'select': ['positions', 'regex', 'pages'],
+            #    'table': ['positions_masks'],
+            #    'where': ['supplier_id = %s'],
+            #    'data': [self.supplier[2]['supplier_id']]
+            #})
             if list_of_fields:
                 list_of_fields = list_of_fields[0]
                 for index in list_of_fields['positions']:

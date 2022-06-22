@@ -21,7 +21,7 @@ from ..functions import search_custom_positions, search_by_positions
 
 
 class FindOrderNumber:
-    def __init__(self, ocr, files, log, regex, config, database, supplier, file, text, nb_pages, custom_page, docservers, configurations, target='header'):
+    def __init__(self, ocr, files, log, regex, config, supplier, file, text, nb_pages, custom_page, docservers, configurations, target='header'):
         self.vatNumber = ''
         self.Ocr = ocr
         self.text = text
@@ -32,7 +32,6 @@ class FindOrderNumber:
         self.docservers = docservers
         self.configurations = configurations
         self.supplier = supplier
-        self.Database = database
         self.file = file
         self.nbPages = nb_pages
         self.customPage = custom_page
@@ -52,20 +51,20 @@ class FindOrderNumber:
 
     def run(self):
         if self.supplier:
-            order_number = search_by_positions(self.supplier, 'order_number', self.Ocr, self.Files, self.Database)
+            order_number = search_by_positions(self.supplier, 'order_number', self.Ocr, self.Files)
             if order_number and order_number[0]:
                 return order_number
 
         if self.supplier and not self.customPage:
-            position = self.Database.select({
-                'select': [
-                    "positions ->> 'order_number' as order_number_position",
-                    "pages ->> 'order_number' as order_number_page"
-                ],
-                'table': ['accounts_supplier'],
-                'where': ['vat_number = %s', 'status <> %s'],
-                'data': [self.supplier[0], 'DEL']
-            })[0]
+            #position = self.Database.select({
+            #    'select': [
+            #        "positions ->> 'order_number' as order_number_position",
+            #        "pages ->> 'order_number' as order_number_page"
+            #    ],
+            #    'table': ['accounts_supplier'],
+            #    'where': ['vat_number = %s', 'status <> %s'],
+            #    'data': [self.supplier[0], 'DEL']
+            #})[0]
 
             if position and position['order_number_position'] not in [False, 'NULL', '', None]:
                 data = {'position': position['order_number_position'], 'regex': None, 'target': 'full', 'page': position['order_number_page']}

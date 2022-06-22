@@ -22,7 +22,7 @@ from ..functions import search_by_positions, search_custom_positions
 
 
 class FindDate:
-    def __init__(self, text, log, regex, configurations, files, ocr, supplier, nb_pages, database, file, docservers, languages):
+    def __init__(self, text, log, regex, configurations, files, ocr, supplier, nb_pages, file, docservers, languages):
         self.date = ''
         self.text = text
         self.log = log
@@ -34,7 +34,6 @@ class FindDate:
         self.ocr = ocr
         self.supplier = supplier
         self.nb_pages = nb_pages
-        self.database = database
         self.file = file
         self.max_time_delta = configurations['timeDelta']
 
@@ -106,21 +105,21 @@ class FindDate:
     def run(self):
         date, due_date = None, None
         if self.supplier:
-            date = search_by_positions(self.supplier, 'invoice_date', self.ocr, self.files, self.database)
-            due_date = search_by_positions(self.supplier, 'invoice_due_date', self.ocr, self.files, self.database)
+            date = search_by_positions(self.supplier, 'invoice_date', self.ocr, self.files)
+            due_date = search_by_positions(self.supplier, 'invoice_due_date', self.ocr, self.files)
 
         if self.supplier:
-            position = self.database.select({
-                'select': [
-                    "positions ->> 'invoice_date' as invoice_date_position",
-                    "positions ->> 'invoice_due_date' as invoice_due_date_position",
-                    "pages ->> 'invoice_date' as invoice_date_page",
-                    "pages ->> 'invoice_due_date' as invoice_due_date_page",
-                ],
-                'table': ['accounts_supplier'],
-                'where': ['vat_number = %s', 'status <> %s'],
-                'data': [self.supplier[0], 'DEL']
-            })[0]
+            #position = self.database.select({
+            #    'select': [
+            #        "positions ->> 'invoice_date' as invoice_date_position",
+            #        "positions ->> 'invoice_due_date' as invoice_due_date_position",
+            #        "pages ->> 'invoice_date' as invoice_date_page",
+            #        "pages ->> 'invoice_due_date' as invoice_due_date_page",
+            #    ],
+            #    'table': ['accounts_supplier'],
+            #    'where': ['vat_number = %s', 'status <> %s'],
+            #    'data': [self.supplier[0], 'DEL']
+            #})[0]
             if position and position['invoice_due_date_position'] not in [False, 'NULL', '', None]:
                 data = {'position': position['invoice_due_date_position'], 'regex': None, 'target': 'full', 'page': position['invoice_due_date_page']}
                 _text, _position = search_custom_positions(data, self.ocr, self.files, self.regex, self.file, self.docservers)

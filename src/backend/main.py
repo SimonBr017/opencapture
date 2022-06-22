@@ -22,7 +22,7 @@ import tempfile
 from kuyruk import Kuyruk
 from flask import current_app
 from .functions import recursive_delete, get_custom_array
-from .import_classes import _Database, _PyTesseract, _Files, _Log, _Config, _SeparatorQR, _Spreadsheet, _SMTP, _Mail
+from .import_classes import  _PyTesseract, _Files, _Log, _Config, _SeparatorQR, _Spreadsheet, _SMTP, _Mail
 
 custom_array = get_custom_array()
 
@@ -53,12 +53,7 @@ def create_classes_from_current_config():
         config_mail.cfg['GLOBAL']['smtp_from_mail'],
     )
     log = _Log(config.cfg['GLOBAL']['logfile'], smtp)
-    db_user = config.cfg['DATABASE']['postgresuser']
-    db_pwd = config.cfg['DATABASE']['postgrespassword']
-    db_name = config.cfg['DATABASE']['postgresdatabase']
-    db_host = config.cfg['DATABASE']['postgreshost']
-    db_port = config.cfg['DATABASE']['postgresport']
-    database = _Database(log, db_name, db_user, db_pwd, db_host, db_port)
+
 
     regex = {}
     docservers = {}
@@ -105,7 +100,7 @@ def create_classes_from_current_config():
     files = _Files(filename, log, docservers, configurations, regex)
     ocr = _PyTesseract(configurations['locale'], log, config, docservers)
 
-    return database, config, regex, files, ocr, log, config_file, spreadsheet, smtp, docservers, configurations
+    return config, regex, files, ocr, log, config_file, spreadsheet, smtp, docservers, configurations
 
 
 def create_classes(config_file):
@@ -125,12 +120,7 @@ def create_classes(config_file):
         config_mail.cfg['GLOBAL']['smtp_from_mail'],
     )
     log = _Log(config.cfg['GLOBAL']['logfile'], smtp)
-    db_user = config.cfg['DATABASE']['postgresuser']
-    db_pwd = config.cfg['DATABASE']['postgrespassword']
-    db_name = config.cfg['DATABASE']['postgresdatabase']
-    db_host = config.cfg['DATABASE']['postgreshost']
-    db_port = config.cfg['DATABASE']['postgresport']
-    database = _Database(log, db_name, db_user, db_pwd, db_host, db_port)
+
 
     regex = {}
     docservers = {}
@@ -180,7 +170,7 @@ def create_classes(config_file):
     #tfdocservers.close()
 
 
-    return config, regex, log, ocr, database, spreadsheet, smtp, docservers, configurations
+    return config, regex, log, ocr, spreadsheet, smtp, docservers, configurations
 
 
 def check_file(files, path, log, docservers):
@@ -238,15 +228,15 @@ def launch(args):
     if not os.path.exists(config_file):
         sys.exit('config file couldn\'t be found')
 
-    config, regex, log, ocr, database, _, smtp, docservers, configurations = create_classes(config_file)
+    config, regex, log, ocr, _, smtp, docservers, configurations = create_classes(config_file)
     tmp_folder = tempfile.mkdtemp(dir=docservers['TMP_PATH'])
     filename = tempfile.NamedTemporaryFile(dir=tmp_folder).name
     files = _Files(filename, log, docservers, configurations, regex)
 
-    if 'languages' in args:
-        languages = args['languages']
-    else:
-        languages = {
+    #if 'languages' in args:
+     #   languages = args['languages']
+    #else:
+    languages = {
     "fr": {
         "label" : "Francais",
         "lang_code": "fra",
@@ -263,16 +253,16 @@ def launch(args):
 
     remove_blank_pages = False
     splitter_method = False
-    if 'input_id' in args:
-        input_settings = database.select({
-            'select': ['*'],
-            'table': ['inputs'],
-            'where': ['input_id = %s', 'module = %s'],
-            'data': [args['input_id'], 'verifier'],
-        })
-        if input_settings:
-            splitter_method = input_settings[0]['splitter_method_id']
-            remove_blank_pages = input_settings[0]['remove_blank_pages']
+    #if 'input_id' in args:
+    #    input_settings = database.select({
+    #        'select': ['*'],
+    #        'table': ['inputs'],
+    #        'where': ['input_id = %s', 'module = %s'],
+    #        'data': [args['input_id'], 'verifier'],
+    #    })
+    #    if input_settings:
+    #        splitter_method = input_settings[0]['splitter_method_id']
+    #        remove_blank_pages = input_settings[0]['remove_blank_pages']
 
     separator_qr = _SeparatorQR(log, config, tmp_folder, 'verifier', files, remove_blank_pages, docservers)
     mail_class = None
@@ -292,7 +282,7 @@ def launch(args):
         if splitter_method and splitter_method == 'qr_code_OC':
             separator_qr.enabled = True
 
-    database.connect()
+    #database.connect()
 
     # Start process
     try:
@@ -314,7 +304,7 @@ def launch(args):
                 #     typo = get_typo(config, path + file, log)
 
                 if check_file(files, path + file, log, docservers) is not False:
-                    res = OCForInvoices_process.process(args, path + file, log, config, files, ocr, regex, database, docservers, configurations, languages)
+                    res = OCForInvoices_process.process(args, path + file, log, config, files, ocr, regex, docservers, configurations, languages)
                     if not res:
                         mail_class.move_batch_to_error(args['batch_path'], args['error_path'], smtp, args['process'], args['msg'], config, docservers)
                         log.error('Error while processing e-mail', False)
@@ -325,7 +315,7 @@ def launch(args):
                 #     typo = get_typo(config, file, log)
 
                 if check_file(files, file, log, docservers) is not False:
-                    res = OCForInvoices_process.process(args, file, log, config, files, ocr, regex, database, docservers, configurations, languages)
+                    res = OCForInvoices_process.process(args, file, log, config, files, ocr, regex, docservers, configurations, languages)
                     if not res:
                         mail_class.move_batch_to_error(args['batch_path'], args['error_path'], smtp, args['process'], args['msg'], config, docservers)
                         log.error('Error while processing e-mail', False)
@@ -335,13 +325,13 @@ def launch(args):
             #     typo = get_typo(config, path, log)
 
             if check_file(files, path, log, docservers) is not False:
-                res = OCForInvoices_process.process(args, path, log, config, files, ocr, regex, database, docservers, configurations, languages)
+                res = OCForInvoices_process.process(args, path, log, config, files, ocr, regex, docservers, configurations, languages)
                 if not res:
                     mail_class.move_batch_to_error(args['batch_path'], args['error_path'], smtp, args['process'], args['msg'], config, docservers)
                     log.error('Error while processing e-mail', False)
 
     recursive_delete(tmp_folder, log)
-    database.conn.close()
+    #database.conn.close()
     end = time.time()
     log.info('Process end after ' + timer(start, end) + '')
     

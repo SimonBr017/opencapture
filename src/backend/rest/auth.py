@@ -18,7 +18,7 @@
 import psycopg2
 from flask_babel import gettext
 from src.backend.import_controllers import auth
-from src.backend.import_classes import _Config, _Database, _Log
+from src.backend.import_classes import _Config, _Log
 from flask import Blueprint, request, make_response, current_app
 
 
