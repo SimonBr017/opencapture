@@ -4,12 +4,12 @@ import os
 import json
 
 def start():
-    script = './default_input.sh'
+    script = 'bin/script/default_input.sh'
     
     dir = 'instance/upload/verifier'
-    proc = subprocess.Popen(["./service_workerOC.sh"])
+    service_worker = subprocess.Popen(["bin/script/service_workerOC.sh"])
     
-    proc
+    service_worker
 
     list = os.listdir(dir)
 
@@ -20,6 +20,6 @@ def start():
 
 
 if __name__ == '__main__':
-    #os.remove("datas.json")
+
     subprocess.run(['killall', 'kuyruk'])
     start()
