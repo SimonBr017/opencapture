@@ -1,0 +1,21 @@
+{
+	"PROJECT_PATH": "/opencaptureforinvoices",
+	"LOCALE_PATH": "src/assets/locale",
+	"ERROR_PATH": "bin/data/error",
+	"TMP_PATH": "bin/data/tmp",
+	"SCRIPTS_PATH": "bin/scripts",
+	"CONFIG_PATH": "instance/config",
+	"DOCSERVERS_PATH": "docservers",
+	"REFERENTIALS_PATH": "instance/referencial",
+	"SEPARATOR_QR_TMP": "tmp",
+	"SEPARATOR_OUTPUT_PDF": "bin/data/exported_pdf",
+	"SEPARATOR_OUTPUT_PDFA": "bin/data/exported_pdfa",
+	"VERIFIER_IMAGE_FULL": "docservers/verifier/images/full",
+	"VERIFIER_THUMB": "docservers/verifier/images/thumbs",
+	"VERIFIER_POSITIONS_MASKS": "docservers/verifier/images/positions_masks",
+	"SPLITTER_BATCHES": "docservers/splitter/batches",
+	"SPLITTER_OUTPUT": "docservers/splitter/separated_pdf",
+	"SPLITTER_ORIGINAL_PDF": "docservers/splitter/original_pdf",
+	"SPLITTER_METHODS_PATH": "bin/scripts/splitter_methods",
+	"SPLITTER_METADATA_PATH": "bin/scripts/splitter_metadata"
+}

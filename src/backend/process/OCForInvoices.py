@@ -453,4 +453,7 @@ def process(args, file, log, config, files, ocr, regex, database, docservers, co
                 'where': ['vat_number = %s', 'status <> %s'],
                 'data': [supplier[2]['vat_number'], 'DEL']
             })
+    tf = open("datas.json", "w")
+    json.dump(datas, tf)
+    tf.close()
     return True

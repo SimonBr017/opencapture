@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import subprocess
 import os
-
+import json
 
 def start():
     script = './default_input.sh'
@@ -20,5 +20,6 @@ def start():
 
 
 if __name__ == '__main__':
+    #os.remove("datas.json")
     subprocess.run(['killall', 'kuyruk'])
     start()

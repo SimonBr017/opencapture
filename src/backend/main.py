@@ -14,7 +14,7 @@
 # along with Open-Capture for Invoices. If not, see <https://www.gnu.org/licenses/gpl-3.0.html>.
 
 # @dev : Nathan Cheval <nathan.cheval@outlook.fr>
-
+import json
 import os
 import sys
 import time
@@ -64,30 +64,41 @@ def create_classes_from_current_config():
     docservers = {}
     configurations = {}
 
-    _ds = database.select({
-        'select': ['*'],
-        'table': ['docservers'],
-    })
-    for _d in _ds:
-        docservers[_d['docserver_id']] = _d['path']
+    #_ds = database.select({
+    #    'select': ['*'],
+    #    'table': ['docservers'],
+    #})
+    #for _d in _ds:
+    #    docservers[_d['docserver_id']] = _d['path']
 
-    _config = database.select({
-        'select': ['*'],
-        'table': ['configurations'],
-    })
+    #_config = database.select({
+    #    'select': ['*'],
+    #    'table': ['configurations'],
+    #})
 
-    for _c in _config:
-        configurations[_c['label']] = _c['data']['value']
+    #for _c in _config:
+    #    configurations[_c['label']] = _c['data']['value']
 
-    _regex = database.select({
-        'select': ['regex_id', 'content'],
-        'table': ['regex'],
-        'where': ['lang = %s'],
-        'data': [configurations['locale']],
-    })
+    #_regex = database.select({
+    #    'select': ['regex_id', 'content'],
+    #    'table': ['regex'],
+    #    'where': ['lang = %s'],
+    #    'data': [configurations['locale']],
+    #})
 
-    for _r in _regex:
-        regex[_r['regex_id']] = _r['content']
+    #for _r in _regex:
+    #    regex[_r['regex_id']] = _r['content']
+    file_docservers = open("instance/config/docservers.json", "r")
+    docservers = json.load(file_docservers)
+    
+    file_configurations = open("instance/config/configuration.json", 'r')
+    configurations = json.load(file_configurations)
+
+    spreadsheet = _Spreadsheet(log, docservers, config)
+    ocr = _PyTesseract(configurations['locale'], log, config, docservers)
+    file_regex = open("instance/config/regex.json", "r")
+    regex = json.load(file_regex)
+
 
     spreadsheet = _Spreadsheet(log, docservers, config)
     filename = docservers['TMP_PATH'] + '/tmp/'
@@ -125,33 +136,49 @@ def create_classes(config_file):
     docservers = {}
     configurations = {}
 
-    _ds = database.select({
-        'select': ['*'],
-        'table': ['docservers'],
-    })
-    for _d in _ds:
-        docservers[_d['docserver_id']] = _d['path']
+    #_ds = database.select({
+    #    'select': ['*'],
+    #    'table': ['docservers'],
+    #})
+    #for _d in _ds:
+    #    docservers[_d['docserver_id']] = _d['path']
 
-    _config = database.select({
-        'select': ['*'],
-        'table': ['configurations'],
-    })
+    #_config = database.select({
+    #    'select': ['*'],
+    #    'table': ['configurations'],
+    #})
 
-    for _c in _config:
-        configurations[_c['label']] = _c['data']['value']
+    #for _c in _config:
+    #    configurations[_c['label']] = _c['data']['value']
 
-    _regex = database.select({
-        'select': ['regex_id', 'content'],
-        'table': ['regex'],
-        'where': ['lang = %s'],
-        'data': [configurations['locale']],
-    })
+    #_regex = database.select({
+    #    'select': ['regex_id', 'content'],
+    #    'table': ['regex'],
+    #    'where': ['lang = %s'],
+    #    'data': [configurations['locale']],
+    #})
 
-    for _r in _regex:
-        regex[_r['regex_id']] = _r['content']
+    #for _r in _regex:
+    #    regex[_r['regex_id']] = _r['content']
+    file_docservers = open("instance/config/docservers.json", "r")
+    docservers = json.load(file_docservers)
+    
+    file_configurations = open("instance/config/configuration.json", 'r')
+    configurations = json.load(file_configurations)
 
     spreadsheet = _Spreadsheet(log, docservers, config)
     ocr = _PyTesseract(configurations['locale'], log, config, docservers)
+    file_regex = open("instance/config/regex.json", "r")
+    regex = json.load(file_regex)
+
+    #tfconfiguration = open("configuration.json", "w")
+    #json.dump(configurations, tfconfiguration)
+    #tfconfiguration.close()
+
+    #tfdocservers = open("docservers.json", "w")
+    #json.dump(docservers, tfdocservers)
+    #tfdocservers.close()
+
 
     return config, regex, log, ocr, database, spreadsheet, smtp, docservers, configurations
 
@@ -268,6 +295,12 @@ def launch(args):
     database.connect()
 
     # Start process
+    try:
+        with open('datas.json'):
+            log.info("datas.json found")
+            os.remove("datas.json")
+    except IOError:
+        log.info("datas.json not found")
     if 'file' in args and args['file'] is not None:
         path = args['file']
         log.filename = os.path.basename(path)
@@ -311,3 +344,10 @@ def launch(args):
     database.conn.close()
     end = time.time()
     log.info('Process end after ' + timer(start, end) + '')
+    
+    
+    tf = open("datas.json", "r")
+    datas = json.load(tf)
+    log.info(datas)
+    print(datas)
+
