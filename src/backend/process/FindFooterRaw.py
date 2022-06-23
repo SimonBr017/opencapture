@@ -22,7 +22,7 @@ from ..functions import search_by_positions, search_custom_positions
 
 
 class FindFooterRaw:
-    def __init__(self, ocr, log, regex, config, files, database, supplier, file, text, typo, docservers, target='footer', nb_pages=False):
+    def __init__(self, ocr, log, regex, config, files, supplier, file, text, typo, docservers, target='footer', nb_pages=False):
         self.date = ''
         self.Ocr = ocr
         self.text = text
@@ -31,7 +31,6 @@ class FindFooterRaw:
         self.config = config
         self.docservers = docservers
         self.Files = files
-        self.Database = database
         self.supplier = supplier
         self.file = file
         self.totalHT = {}
@@ -112,12 +111,12 @@ class FindFooterRaw:
             return False
 
     def process_footer_with_position(self, column, select):
-        position = self.Database.select({
-            'select': select,
-            'table': ['accounts_supplier'],
-            'where': ['vat_number = %s', 'status <> %s'],
-            'data': [self.supplier[0], 'DEL']
-        })[0]
+        #position = self.Database.select({
+         #   'select': select,
+        #    'table': ['accounts_supplier'],
+        #    'where': ['vat_number = %s', 'status <> %s'],
+        #    'data': [self.supplier[0], 'DEL']
+        #})[0]
 
         if position and position[column + '_position'] not in ['((,),(,))', 'NULL', None, '', False]:
             page = position[column + '_page']
@@ -245,25 +244,25 @@ class FindFooterRaw:
     def run(self, text_as_string=False):
         total_ttc, total_ht, vat_rate, vat_amount = {}, {}, {}, {}
         if self.supplier:
-            all_rate = search_by_positions(self.supplier, 'total_ttc', self.Ocr, self.Files, self.Database)
+            all_rate = search_by_positions(self.supplier, 'total_ttc', self.Ocr, self.Files)
             if all_rate and all_rate[0]:
                 total_ttc = {
                     0: re.sub(r"[^0-9\.]|\.(?!\d)", "", all_rate[0].replace(',', '.')),
                     1: all_rate[1]
                 }
-            no_rate = search_by_positions(self.supplier, 'total_ht', self.Ocr, self.Files, self.Database)
+            no_rate = search_by_positions(self.supplier, 'total_ht', self.Ocr, self.Files)
             if no_rate and no_rate[0]:
                 total_ht = {
                     0: re.sub(r"[^0-9\.]|\.(?!\d)", "", no_rate[0].replace(',', '.')),
                     1: no_rate[1]
                 }
-            percentage = search_by_positions(self.supplier, 'vat_rate', self.Ocr, self.Files, self.Database)
+            percentage = search_by_positions(self.supplier, 'vat_rate', self.Ocr, self.Files)
             if percentage and percentage[0]:
                 vat_rate = {
                     0: re.sub(r"[^0-9\.]|\.(?!\d)", "", percentage[0].replace(',', '.')),
                     1: percentage[1]
                 }
-            _vat_amount = search_by_positions(self.supplier, 'vat_amount', self.Ocr, self.Files, self.Database)
+            _vat_amount = search_by_positions(self.supplier, 'vat_amount', self.Ocr, self.Files)
             if _vat_amount and _vat_amount[0]:
                 vat_amount = {
                     0: re.sub(r"[^0-9\.]|\.(?!\d)", "", _vat_amount[0].replace(',', '.')),

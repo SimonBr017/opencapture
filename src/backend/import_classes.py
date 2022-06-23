@@ -40,11 +40,11 @@ elif 'classes' in custom_array['PyTesseract']['path']:
                                       fromlist=[custom_array['PyTesseract']['module']]),
                            custom_array['PyTesseract']['module'])
 
-if 'database' or 'classes' not in custom_array['Database']['path']:
-    from .classes.Database import Database as _Database
-elif 'classes' in custom_array['Database']['path']:
-    _Database = getattr(__import__(custom_array['Database']['path'] + '.' + custom_array['Database']['module'],
-                                   fromlist=[custom_array['Database']['module']]), custom_array['Database']['module'])
+#if 'database' or 'classes' not in custom_array['Database']['path']:
+#    from .classes.Database import Database as _Database
+#elif 'classes' in custom_array['Database']['path']:
+#    _Database = getattr(__import__(custom_array['Database']['path'] + '.' + custom_array['Database']['module'],
+#                                   fromlist=[custom_array['Database']['module']]), custom_array['Database']['module'])
 
 # if 'invoice_classification' or 'classes' not in custom_array['invoice_classification']['path']:
 #     from .invoice_classification import invoice_classification

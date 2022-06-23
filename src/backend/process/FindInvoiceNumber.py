@@ -21,7 +21,7 @@ from ..functions import search_by_positions, search_custom_positions
 
 
 class FindInvoiceNumber:
-    def __init__(self, ocr, files, log, regex, config, database, supplier, file, text, nb_pages, custom_page, footer_text, docservers, configurations):
+    def __init__(self, ocr, files, log, regex, config, supplier, file, text, nb_pages, custom_page, footer_text, docservers, configurations):
         self.vatNumber = ''
         self.Ocr = ocr
         self.text = text
@@ -33,7 +33,7 @@ class FindInvoiceNumber:
         self.docservers = docservers
         self.configurations = configurations
         self.supplier = supplier
-        self.Database = database
+
         self.file = file
         self.nbPages = nb_pages
         self.customPage = custom_page
@@ -52,20 +52,20 @@ class FindInvoiceNumber:
 
     def run(self):
         if self.supplier:
-            invoice_number = search_by_positions(self.supplier, 'invoice_number', self.Ocr, self.Files, self.Database)
+            invoice_number = search_by_positions(self.supplier, 'invoice_number', self.Ocr, self.Files)
             if invoice_number and invoice_number[0]:
                 return invoice_number
 
         if self.supplier and not self.customPage:
-            position = self.Database.select({
-                'select': [
-                    "positions ->> 'invoice_number' as invoice_number_position",
-                    "pages ->> 'invoice_number' as invoice_number_page"
-                ],
-                'table': ['accounts_supplier'],
-                'where': ['vat_number = %s', 'status <> %s'],
-                'data': [self.supplier[0], 'DEL']
-            })[0]
+            #position = self.Database.select({
+            #    'select': [
+            #        "positions ->> 'invoice_number' as invoice_number_position",
+            #        "pages ->> 'invoice_number' as invoice_number_page"
+            #    ],
+            #    'table': ['accounts_supplier'],
+            #    'where': ['vat_number = %s', 'status <> %s'],
+            #    'data': [self.supplier[0], 'DEL']
+            #})[0]
 
             if position and position['invoice_number_position'] not in [False, 'NULL', '', None]:
                 data = {'position': position['invoice_number_position'], 'regex': None, 'target': 'full', 'page': position['invoice_number_page']}
