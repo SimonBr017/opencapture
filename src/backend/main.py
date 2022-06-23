@@ -214,10 +214,10 @@ def str2bool(value):
     return value.lower() in "true"
 
 
-OCforInvoices_worker = Kuyruk()
+#OCforInvoices_worker = Kuyruk()
 
 
-@OCforInvoices_worker.task(queue='invoices')
+#@OCforInvoices_worker.task(queue='invoices')
 def launch(args):
     start = time.time()
 

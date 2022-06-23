@@ -17,7 +17,6 @@
 # @dev : Nathan Cheval <nathan.cheval@outlook.fr>
 
 name="default_input"
-#OCPath="/var/www/html/opencaptureforinvoices/"
 logFile=bin/data/log/OCforInvoices.log
 errFilepath=bin/data/error/$name
 tmpFilepath=bin/data/pdf

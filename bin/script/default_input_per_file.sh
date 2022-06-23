@@ -30,19 +30,18 @@ filepath=$1
 filename=$(basename "$filepath")
 ext=$(file -b -i "$filepath")
 
-if ! test -e $PID && test "$ext" = 'application/pdf; charset=binary' && test -f "$filepath";
+if test "$ext" = 'application/pdf; charset=binary' && test -f "$filepath";
 then
-    touch $PID
-    echo $$ > $PID
-    echo "[$name    ] [Script Open-Capture For Invoices  ] $(date +"%d-%m-%Y %T") INFO $filepath is a valid file and PID file created" >> "$logFile"
 
-    mv "$filepath" "$tmpFilepath"
+    echo "[$name    ] [Script Open-Capture For Invoices  ] $(date +"%d-%m-%Y %T") INFO $filepath is a valid file" >> "$logFile"
 
-    python3 launch_worker.py -c instance/config.ini -f "$tmpFilepath"/"$filename" -input_id default_input
-	
-    rm -f $PID
-	sleep 10
-	killall kuyruk
+	mv "$filepath" "$tmpFilepath"
+
+	python3 launch_worker.py -c instance/config.ini -f "$tmpFilepath"/"$filename" -input_id default_input
+
+#    rm -f $PID
+#	sleep 10
+#	killall kuyruk
 
 elif test -f "$filepath" && test "$ext" != 'application/pdf; charset=binary';
 then
